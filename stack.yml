@@ -1,0 +1,8 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: cleth stack
+
+Parameters:
+  EC2KeyPairName:
+    Type: AWS::EC2::KeyPair::KeyName
+    Description: The name of an existing EC2 key pair to enable access to EC2 instances in the stack.
+    ConstraintDescription: Use only a keypair you own in the region
