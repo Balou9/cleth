@@ -8,7 +8,7 @@ Parameters:
     # ConstraintDescription: Use only a keypair you own in the region
   VpcCidr:
     Type: String
-    Description: 16 Subnet to be used for this VPC (ex: 10.2)
+    Description: "/16 Subnet to be used for this VPC (ex: 10.2)"
 
 Resources:
   ElasticIp:
