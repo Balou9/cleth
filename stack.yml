@@ -5,10 +5,10 @@ Parameters:
   EC2KeyPairName:
     Type: AWS::EC2::KeyPair::KeyName
     Description: The name of an existing EC2 key pair to enable access to EC2 instances in the stack.
-    ConstraintDescription: Use only a keypair you own in the region
+    # ConstraintDescription: Use only a keypair you own in the region
   VpcCidr:
     Type: String
-    Description: /16 Subnet to be used for this VPC (ex: 10.2)
+    Description: 16 Subnet to be used for this VPC (ex: 10.2)
 
 Resources:
   ElasticIp:
@@ -22,3 +22,35 @@ Resources:
       CidrBlock: !Sub ${VpcCidr}.0.0/16
       EnableDnsHostnames: true
       EnableDnsSupport: true
+
+  EthereumSubnetAPublic:
+    Type: AWS::EC2::Subnet
+      Properties:
+        # AvailabilityZone:
+        CidrBlock: !Sub ${VpcCidr}.0.0/20
+        MapPublicIpOnLaunch: true
+        VpcId: !Ref EthereumVPC
+
+  EthereumSubnetAPrivate:
+    Type: AWS::EC2::Subnet
+      Properties:
+        # AvailabilityZone:
+        CidrBlock: !Sub ${VpcCidr}.16.0/20
+        MapPublicIpOnLaunch: false
+        VpcId: !Ref EthereumVPC
+
+  EthereumSubnetBPublic:
+    Type: AWS::EC2::Subnet
+      Properties:
+        # AvailabilityZone:
+        CidrBlock: !Sub ${VpcCidr}.32.0/20
+        MapPublicIpOnLaunch: true
+        VpcId: !Ref EthereumVPC
+
+  EthereumSubnetBPrivate:
+    Type: AWS::EC2::Subnet
+      Properties:
+        # AvailabilityZone:
+        CidrBlock: !Sub ${VpcCidr}.48.0/20
+        MapPublicIpOnLaunch: false
+        VpcId: !Ref EthereumVPC
