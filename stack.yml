@@ -6,3 +6,19 @@ Parameters:
     Type: AWS::EC2::KeyPair::KeyName
     Description: The name of an existing EC2 key pair to enable access to EC2 instances in the stack.
     ConstraintDescription: Use only a keypair you own in the region
+  VpcCidr:
+    Type: String
+    Description: /16 Subnet to be used for this VPC (ex: 10.2)
+
+Resources:
+  ElasticIp:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: standard # vpc?
+
+  EthereumVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Sub ${VpcCidr}.0.0/16
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
