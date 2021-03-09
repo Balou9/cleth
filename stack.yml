@@ -15,7 +15,7 @@ Resources:
     Type: AWS::EC2::EIP
     Properties:
       Domain: vpc
-  # 
+  #
   # ElasticIpAssociation:
   # Type : AWS::EC2::EIPAssociation
   # Properties:
@@ -35,7 +35,7 @@ Resources:
   EthereumSubnetAPublic:
     Type: AWS::EC2::Subnet
       Properties:
-        # AvailabilityZone:
+        AvailabilityZone: us-east-1a
         CidrBlock: !Sub ${VpcCidr}.0.0/20
         MapPublicIpOnLaunch: true
         VpcId: !Ref EthereumVPC
@@ -43,7 +43,7 @@ Resources:
   EthereumSubnetAPrivate:
     Type: AWS::EC2::Subnet
       Properties:
-        # AvailabilityZone:
+        AvailabilityZone: us-east-1b
         CidrBlock: !Sub ${VpcCidr}.16.0/20
         MapPublicIpOnLaunch: false
         VpcId: !Ref EthereumVPC
@@ -51,7 +51,7 @@ Resources:
   EthereumSubnetBPublic:
     Type: AWS::EC2::Subnet
       Properties:
-        # AvailabilityZone:
+        AvailabilityZone: us-east-1a
         CidrBlock: !Sub ${VpcCidr}.32.0/20
         MapPublicIpOnLaunch: true
         VpcId: !Ref EthereumVPC
@@ -59,7 +59,7 @@ Resources:
   EthereumSubnetBPrivate:
     Type: AWS::EC2::Subnet
       Properties:
-        # AvailabilityZone:
+        AvailabilityZone: us-east-1b
         CidrBlock: !Sub ${VpcCidr}.48.0/20
         MapPublicIpOnLaunch: false
         VpcId: !Ref EthereumVPC
