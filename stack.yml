@@ -14,7 +14,16 @@ Resources:
   ElasticIp:
     Type: AWS::EC2::EIP
     Properties:
-      Domain: standard # vpc?
+      Domain: vpc
+  # 
+  # ElasticIpAssociation:
+  # Type : AWS::EC2::EIPAssociation
+  # Properties:
+  #   AllocationId : String
+  #   EIP : String
+  #   InstanceId : String
+  #   NetworkInterfaceId : String
+  #   PrivateIpAddress: String
 
   EthereumVPC:
     Type: AWS::EC2::VPC
