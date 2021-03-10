@@ -21,9 +21,11 @@ Resources:
                   - managedblockchain:*
                   - lambda:*
                   - iam:*
-                  - apigateway:*
+                  - ecs:*
+                  - ecr:*
                   - logs:*
                   - s3:*
+                  - dynamodb:*
                 Resource: "*"
 
   AccessKey:
