@@ -34,7 +34,7 @@ Resources:
   EthVPC:
     Type: AWS::EC2::VPC
     Properties:
-      CidrBlock: !Ref EthVPCCidr
+      CidrBlock: !Ref VPCCidr
       EnableDnsHostnames: true
       EnableDnsSupport: true
 
