@@ -148,3 +148,50 @@ Resources:
       IpProtocol: -1
       GroupId: !Ref AlbSecurityGroup
       ToPort: -1
+
+  ECSRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Path: /
+      RoleName: !Sub ${ECSClusterName}-executionrole
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: 'sts:AssumeRole'
+      Policies:
+      - PolicyName: EC2EthereumPolicy
+        PolicyDocument:
+          Statement:
+          - Effect: Allow
+            Action:
+              - ecs:CreateCluster",
+              - ecs:DeregisterContainerInstance",
+              - ecs:DiscoverPollEndpoint",
+              - ecs:Poll",
+              - ecs:RegisterContainerInstance",
+              - ecs:StartTelemetrySession",
+              - ecs:Submit*",
+              - ecr:GetAuthorizationToken",
+              - ecr:BatchCheckLayerAvailability",
+              - ecr:GetDownloadUrlForLayer",
+              - ecr:BatchGetImage",
+              - logs:CreateLogStream",
+              - logs:PutLogEvents",
+              - dynamodb:BatchGetItem",
+              - dynamodb:BatchWriteItem",
+              - dynamodb:PutItem",
+              - dynamodb:DeleteItem",
+              - dynamodb:GetItem",
+              - dynamodb:Scan",
+              - dynamodb:Query",
+              - dynamodb:UpdateItem"
+            Resource: "*"
+
+  ECSInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: /
+      Roles:
+        - !Ref ECSRole
