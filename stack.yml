@@ -23,17 +23,31 @@ Parameters:
     Type: String
 
 Resources:
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VpcCidr
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
+
   ElasticIp:
     Type: AWS::EC2::EIP
     Properties:
       Domain: vpc
+      InstanceId: !Ref VPC
 
-  VPC:
-    Type: AWS::EC2::VPC
+  AssociateVPC:
+    Type: AWS::EC2::EIPAssociation
     Properties:
-      CidrBlock: !Sub ${VpcCidr}.0.0/16
-      EnableDnsHostnames: true
-      EnableDnsSupport: true
+      AllocationId: !GetAtt VPC.AllocationId
+      EIP: !Ref ElasticIp
+      NetworkInterfaceId: !Ref EthereumNetworkInterface
+  #
+  # EthereumNetworkInterface:
+  #   Type: AWS::EC2::NetworkInterface
+
+  # Ec2Instance:
+  #   Type: AWS::EC2::Instance
 
   PublicSubnetA:
     Type: AWS::EC2::Subnet
