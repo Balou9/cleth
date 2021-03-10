@@ -2,6 +2,10 @@ AWSTemplateFormatVersion: 2010-09-09
 Description: cleth stack
 
 Parameters:
+  ECSClusterName:
+    Description: Name of the ECS Cluster
+    Type: String
+
   EC2SecurityGroupName:
     Description: Name of the EC2 security group
     Type: String
@@ -149,6 +153,11 @@ Resources:
       GroupId: !Ref AlbSecurityGroup
       ToPort: -1
 
+  ECSCluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: !Ref ECSClusterName
+
   ECSRole:
     Type: AWS::IAM::Role
     Properties:
@@ -166,26 +175,26 @@ Resources:
           Statement:
           - Effect: Allow
             Action:
-              - ecs:CreateCluster",
-              - ecs:DeregisterContainerInstance",
-              - ecs:DiscoverPollEndpoint",
-              - ecs:Poll",
-              - ecs:RegisterContainerInstance",
-              - ecs:StartTelemetrySession",
-              - ecs:Submit*",
-              - ecr:GetAuthorizationToken",
-              - ecr:BatchCheckLayerAvailability",
-              - ecr:GetDownloadUrlForLayer",
-              - ecr:BatchGetImage",
-              - logs:CreateLogStream",
-              - logs:PutLogEvents",
-              - dynamodb:BatchGetItem",
-              - dynamodb:BatchWriteItem",
-              - dynamodb:PutItem",
-              - dynamodb:DeleteItem",
-              - dynamodb:GetItem",
-              - dynamodb:Scan",
-              - dynamodb:Query",
+              - ecs:CreateCluster"
+              - ecs:DeregisterContainerInstance"
+              - ecs:DiscoverPollEndpoint"
+              - ecs:Poll"
+              - ecs:RegisterContainerInstance"
+              - ecs:StartTelemetrySession"
+              - ecs:Submit*"
+              - ecr:GetAuthorizationToken"
+              - ecr:BatchCheckLayerAvailability"
+              - ecr:GetDownloadUrlForLayer"
+              - ecr:BatchGetImage"
+              - logs:CreateLogStream"
+              - logs:PutLogEvents"
+              - dynamodb:BatchGetItem"
+              - dynamodb:BatchWriteItem"
+              - dynamodb:PutItem"
+              - dynamodb:DeleteItem"
+              - dynamodb:GetItem"
+              - dynamodb:Scan"
+              - dynamodb:Query"
               - dynamodb:UpdateItem"
             Resource: "*"
 
