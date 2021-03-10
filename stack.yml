@@ -39,9 +39,8 @@ Resources:
   AssociateVPC:
     Type: AWS::EC2::EIPAssociation
     Properties:
-      AllocationId: !GetAtt VPC.AllocationId
-      EIP: !Ref ElasticIp
-      NetworkInterfaceId: !Ref EthereumNetworkInterface
+      AllocationId: !GetAtt ElasticIp.AllocationId
+
   #
   # EthereumNetworkInterface:
   #   Type: AWS::EC2::NetworkInterface
