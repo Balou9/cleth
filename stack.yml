@@ -35,6 +35,15 @@ Parameters:
     Type: String
 
 Resources:
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+
+  InternetGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId: !Ref InternetGateway
+      VpcId: !Ref EthVPC
+
   EthVPC:
     Type: AWS::EC2::VPC
     Properties:
