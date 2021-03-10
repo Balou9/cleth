@@ -35,6 +35,13 @@ Parameters:
     Type: String
 
 Resources:
+  EthVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VPCCidr
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
+
   InternetGateway:
     Type: AWS::EC2::InternetGateway
 
@@ -43,13 +50,6 @@ Resources:
     Properties:
       InternetGatewayId: !Ref InternetGateway
       VpcId: !Ref EthVPC
-
-  EthVPC:
-    Type: AWS::EC2::VPC
-    Properties:
-      CidrBlock: !Ref VPCCidr
-      EnableDnsHostnames: true
-      EnableDnsSupport: true
 
   ElasticIp:
     Type: AWS::EC2::EIP
@@ -213,3 +213,18 @@ Resources:
       Path: /
       Roles:
         - !Ref ECSRole
+
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref EthVPC
+
+  PrivateRouteTableA:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref EthVPC
+
+  PrivateRouteTableB:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref EthVPC
