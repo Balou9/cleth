@@ -2,6 +2,14 @@ AWSTemplateFormatVersion: 2010-09-09
 Description: cleth stack
 
 Parameters:
+  EC2SecurityGroupName:
+    Description: Name of the ec2 security group
+    Type: String
+
+  ApplicationLoadBalancerSecurityGroupName:
+    Description: Name of the application load balancer security group
+    Type: String
+
   VpcCidr:
     Description: IP range (CIDR notation) for this VPC
     Type: String
@@ -23,10 +31,10 @@ Parameters:
     Type: String
 
 Resources:
-  VPC:
+  EthVPC:
     Type: AWS::EC2::VPC
     Properties:
-      CidrBlock: !Ref VpcCidr
+      CidrBlock: !Ref EthVPCCidr
       EnableDnsHostnames: true
       EnableDnsSupport: true
 
@@ -34,19 +42,12 @@ Resources:
     Type: AWS::EC2::EIP
     Properties:
       Domain: vpc
-      InstanceId: !Ref VPC
+      InstanceId: !Ref EthVPC
 
-  AssociateVPC:
+  ElasticIpAssociation:
     Type: AWS::EC2::EIPAssociation
     Properties:
       AllocationId: !GetAtt ElasticIp.AllocationId
-
-  #
-  # EthereumNetworkInterface:
-  #   Type: AWS::EC2::NetworkInterface
-
-  # Ec2Instance:
-  #   Type: AWS::EC2::Instance
 
   PublicSubnetA:
     Type: AWS::EC2::Subnet
@@ -54,7 +55,7 @@ Resources:
       AvailabilityZone: !Select [ 0, !GetAZs '' ]
       CidrBlock: !Ref PublicSubnetACidr
       MapPublicIpOnLaunch: true
-      VpcId: !Ref VPC
+      VpcId: !Ref EthVPC
 
   PublicSubnetB:
     Type: AWS::EC2::Subnet
@@ -62,7 +63,7 @@ Resources:
       AvailabilityZone: !Select [ 1, !GetAZs '' ]
       CidrBlock: !Ref PublicSubnetBCidr
       MapPublicIpOnLaunch: true
-      VpcId: !Ref VPC
+      VpcId: !Ref EthVPC
 
   PrivateSubnetA:
     Type: AWS::EC2::Subnet
@@ -70,7 +71,7 @@ Resources:
       AvailabilityZone: !Select [ 0, !GetAZs '' ]
       CidrBlock: !Ref PrivateSubnetACidr
       MapPublicIpOnLaunch: false
-      VpcId: !Ref VPC
+      VpcId: !Ref EthVPC
 
   PrivateSubnetB:
     Type: AWS::EC2::Subnet
@@ -78,4 +79,72 @@ Resources:
       AvailabilityZone: !Select [ 1, !GetAZs '' ]
       CidrBlock: !Ref PrivateSubnetBCidr
       MapPublicIpOnLaunch: false
-      VpcId: !Ref VPC
+      VpcId: !Ref EthVPC
+
+  AlbSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security group to manage access to ETH Application Load Balancer
+      GroupName: !Ref ApplicationLoadBalancerSecurityGroupName
+      VpcId: !Ref EthVPC
+
+  Ec2SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security group to manage access to ETH EC2
+      GroupName: !Ref Ec2SecurityGroupName
+      VpcId: !Ref EthVPC
+
+  Ec2InboundFromAlb:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      FromPort: -1
+      GroupId: !Ref Ec2SecurityGroup
+      IpProtocol: -1
+      SourceSecurityGroupId: !Ref AlbSecurityGroup
+      ToPort: -1
+
+  Ec2InboundFromEc2:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      FromPort: -1
+      GroupId: !Ref Ec2SecurityGroup
+      IpProtocol: -1
+      SourceSecurityGroupId: !Ref Ec2ecurityGroup
+      ToPort: -1
+
+  AlbInboundFromAlb:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      FromPort: -1
+      GroupId: !Ref AlbSecurityGroup
+      IpProtocol: -1
+      SourceSecurityGroupId: !Ref AlbSecurityGroup
+      ToPort: -1
+
+  AlbInboundFromEc2:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      FromPort: -1
+      GroupId: !Ref AlbSecurityGroup
+      IpProtocol: -1
+      SourceSecurityGroupId: !Ref Ec2SecurityGroup
+      ToPort: -1
+
+  AlbOutboundToAlb:
+    Type: AWS::EC2::SecurityGroupEgress
+    Properties:
+      FromPort: -1
+      DestinationSecurityGroupId: !Ref AlbSecurityGroup
+      IpProtocol: -1
+      GroupId: !Ref AlbSecurityGroup
+      ToPort: -1
+
+  AlbOutboundToEc2:
+    Type: AWS::EC2::SecurityGroupEgress
+    Properties:
+      FromPort: -1
+      DestinationSecurityGroupId: !Ref Ec2SecurityGroup
+      IpProtocol: -1
+      GroupId: !Ref AlbSecurityGroup
+      ToPort: -1
