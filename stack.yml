@@ -110,7 +110,7 @@ Resources:
       FromPort: -1
       GroupId: !Ref EC2SecurityGroup
       IpProtocol: -1
-      SourceSecurityGroupId: !Ref EC2ecurityGroup
+      SourceSecurityGroupId: !Ref EC2SecurityGroup
       ToPort: -1
 
   AlbInboundFromAlb:
@@ -144,7 +144,7 @@ Resources:
     Type: AWS::EC2::SecurityGroupEgress
     Properties:
       FromPort: -1
-      DestinationSecurityGroupId: !Ref Ec2SecurityGroup
+      DestinationSecurityGroupId: !Ref EC2SecurityGroup
       IpProtocol: -1
       GroupId: !Ref AlbSecurityGroup
       ToPort: -1
