@@ -2,6 +2,11 @@ AWSTemplateFormatVersion: 2010-09-09
 Description: cleth stack
 
 Parameters:
+  KeyName:
+    Type: String
+    Description: SSH Key name to access the machine
+    # Default: ""
+
   SecurityGroup:
     Description: security group for ECS hosts
     Type: AWS::EC2::SecurityGroup::Id
@@ -17,7 +22,7 @@ Parameters:
   SnapshotId:
     Type: String
     Description: EBS Snapshot from which to initiate the chain data
-    Default: ""
+    # Default: ""
 
   VolumeSize:
     Type: Number
@@ -29,7 +34,7 @@ Parameters:
   Iops:
     Type: Number
     Default: 2500
-    
+
   ECSClusterName:
     Description: Name of the ECS Cluster
     Type: String
