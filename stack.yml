@@ -25,6 +25,10 @@ Parameters:
 
   VolumeType:
     Type: String
+
+  Iops:
+    Type: Number
+    Default: 2500
     
   ECSClusterName:
     Description: Name of the ECS Cluster
