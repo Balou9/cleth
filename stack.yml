@@ -2,6 +2,30 @@ AWSTemplateFormatVersion: 2010-09-09
 Description: cleth stack
 
 Parameters:
+  SecurityGroup:
+    Description: security group for ECS hosts
+    Type: AWS::EC2::SecurityGroup::Id
+
+  Subnets:
+    Description: subnets to run ECS service in
+    Type: List<AWS::EC2::Subnet::Id>
+
+  InstanceType:
+    Type: String
+    Description: ECS instance type
+
+  SnapshotId:
+    Type: String
+    Description: EBS Snapshot from which to initiate the chain data
+    Default: ""
+
+  VolumeSize:
+    Type: Number
+    Default: 100
+
+  VolumeType:
+    Type: String
+    
   ECSClusterName:
     Description: Name of the ECS Cluster
     Type: String
@@ -89,6 +113,97 @@ Resources:
       Roles:
         - !Ref ECSRole
 
+  ECSAutoScalingGroup:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      # AvailabilityZones: !Ref AvailabilityZones # TODO:
+      LaunchConfigurationName: !Ref ECSLaunchConfiguration
+      # VPCZoneIdentifier: !Ref Subnets TODO:
+      # allow remove before replace
+      MinSize: 1
+      MaxSize: 2
+      DesiredCapacity: 1
+      # Tags:
+      #   - Key: Name
+      #     Value: !Sub aoso
+      #     PropagateAtLaunch: true
+    CreationPolicy:
+      ResourceSignal:
+        Timeout: PT10M
+    UpdatePolicy:
+      AutoScalingRollingUpdate:
+        # allow to remove during update
+        MinInstancesInService: 1
+        MaxBatchSize: 1
+        PauseTime: PT10M
+        SuspendProcesses:
+          - HealthCheck
+          - ReplaceUnhealthy
+          - AZRebalance
+          - AlarmNotification
+          - ScheduledActions
+        WaitOnResourceSignals: true
+
+  DataVolumeA:
+    Type: AWS::EC2::Volume
+    Properties:
+      AvailabilityZone: !Select [ 0, !GetAZs '' ]
+      Iops: !If
+        - IopsSupported
+        - !Ref Iops
+        - !Ref "AWS::NoValue"
+      Size: !Ref VolumeSize
+      VolumeType: !Ref VolumeType
+      SnapshotId: !Ref SnapshotId
+      # Tags:
+      #   - Key: StackId
+      #     Value: !Ref "AWS::StackId"
+
+  DataVolumeB:
+    Type: AWS::EC2::Volume
+    Properties:
+      AvailabilityZone: !Select [ 1, !GetAZs '' ]
+      Iops: !If
+        - IopsSupported
+        - !Ref Iops
+        - !Ref "AWS::NoValue"
+      Size: !Ref VolumeSize
+      VolumeType: !Ref VolumeType
+      SnapshotId: !Ref SnapshotId
+      # Tags:
+      #   - Key: StackId
+      #     Value: !Ref "AWS::StackId"
+
+  ECSLaunchConfiguration:
+    Type: AWS::AutoScaling::LaunchConfiguration
+    DependsOn:
+      - DataVolumeA
+      - DataVolumeB
+    Properties:
+      AssociatePublicIpAddress: true
+      ImageId:  !FindInMap [AWSRegionToAMI, !Ref "AWS::Region", AMI]
+      InstanceType: !Ref InstanceType
+      KeyName: !If
+        - SSHAccess
+        - !Ref KeyName
+        - !Ref "AWS::NoValue"
+      SecurityGroups:
+        - !Ref SecurityGroup
+      IamInstanceProfile: !Ref ECSInstanceProfile
+      # BlockDeviceMappings:
+      # - DeviceName: "/dev/sdh"
+      #   Ebs:
+      #     SnapshotId: !Ref SnapshotId
+      #     VolumeSize: !Ref VolumeSize
+      #     VolumeType: !Ref VolumeType
+      #     Iops: !Ref Iops
+      UserData:
+        "Fn::Base64": !Sub |
+          #!/bin/bash
+          set -x
+          yum install -y aws-cfn-bootstrap jq
+          /opt/aws/bin/cfn-init -v --region ${AWS::Region} --stack ${AWS::StackName} --resource ECSLaunchConfiguration
+          /opt/aws/bin/cfn-signal -e $? --region ${AWS::Region} --stack ${AWS::StackName} --resource ECSAutoScalingGroup
 ###### VPC ###########################################################
 
   EthVPC:
